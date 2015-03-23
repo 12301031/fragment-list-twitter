@@ -1,3 +1,9 @@
+/*
+ *12301031
+ *Chen Jixuan
+ * Assignment 3
+ */
+
 // MainActivity.java
 // Manages your favorite Twitter searches for easy  
 // access and display in the device's web browser
@@ -8,7 +14,6 @@ import java.util.Collections;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,14 +24,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-public class MainActivity extends Activity
+public class MainActivity extends Activity implements FirstFragment.OnFragmentInteractionListener
 {
    // name of SharedPreferences XML file that stores the saved searches 
    private static final String SEARCHES = "searches";
@@ -64,11 +68,15 @@ public class MainActivity extends Activity
          (ImageButton) findViewById(R.id.saveButton);
       saveButton.setOnClickListener(saveButtonListener);
 
+
       // MOVE to ListFragment _ register listener that searches Twitter when user touches a tag
       //getListView().setOnItemClickListener(itemClickListener);
       
       // MOVE to ListFragment _  set listener that allows user to delete or edit a search
       //getListView().setOnItemLongClickListener(itemLongClickListener);
+
+       getFragmentManager().beginTransaction().add(R.id.fragmentContainer,new FirstFragment())
+               .commit();//first fragment
    } // end method onCreate
 
    // NO CHANGES _  saveButtonListener saves a tag-query pair into SharedPreferences
@@ -203,7 +211,7 @@ public class MainActivity extends Activity
                return true;
            } // end method onItemLongClick
        }; // end OnItemLongClickListener declaration
-   }; // end get method
+   } // end get method
 
    // NO CHANGES _ allows user to choose an app for sharing a saved search's URL
    private void shareSearch(String tag)
@@ -275,6 +283,24 @@ public class MainActivity extends Activity
    // ADDED to set up the ListFragment
    public ArrayAdapter<String> getAdapter(){return adapter;}
 
+    //Send the URL address to second fragment
+    public void sendToSecondFrag(String urlstring){
+        String urlString = getString(R.string.searchURL) +
+                Uri.encode(savedSearches.getString(urlstring, ""), "UTF-8");
+
+        getFragmentManager().beginTransaction()
+                .replace(R.id.fragmentContainer, SecondFragment.newInstance(urlString))
+                .addToBackStack(null)
+                .commit();
+    }
+
+    public void onBackPressed(){
+        if(getFragmentManager().getBackStackEntryCount()>0){
+            getFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
 } // end class MainActivity
 
 
